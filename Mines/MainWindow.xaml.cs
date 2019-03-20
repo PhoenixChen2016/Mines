@@ -23,6 +23,8 @@ namespace Mines
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			DataContext = Enumerable.Range(0, 10).Select(n => Enumerable.Range(0, 10).Select(m => m * n));
 		}
 	}
 }
