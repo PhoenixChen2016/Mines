@@ -8,10 +8,19 @@ namespace Mines
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value is Area area)
+			if (value is AreaStatus status)
 			{
-				if (area.HasBomb)
-					return "Assets/Boom.jpg";
+				switch (status)
+				{
+					case AreaStatus.Bomb:
+						return "Assets/Bomb.jpg";
+					case AreaStatus.Boom:
+						return "Assets/Boom.jpg";
+					case AreaStatus.Flag:
+						return "Assets/Flag.png";
+					case AreaStatus.SteppedOn:
+						return "Assets/SteppedOn.jpg";
+				}
 			}
 
 			return null;

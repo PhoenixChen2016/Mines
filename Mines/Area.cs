@@ -6,6 +6,10 @@ namespace Mines
 	{
 		private bool m_HasBomb = false;
 
+		private AreaStatus m_Status = AreaStatus.None;
+
+		private bool m_IsSteppedOn = false;
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public bool HasBomb
@@ -21,8 +25,52 @@ namespace Mines
 			}
 		}
 
+		public AreaStatus Status
+		{
+			get
+			{
+				return m_Status;
+			}
+			set
+			{
+				m_Status = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
+			}
+		}
+
 		public int X { get; set; }
 
 		public int Y { get; set; }
+
+		public bool IsSteppedOn
+		{
+			get => m_IsSteppedOn;
+			set
+			{
+				m_IsSteppedOn = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSteppedOn)));
+			}
+		}
+
+		public void ClickArea()
+		{
+			if (IsSteppedOn)
+				return;
+
+			IsSteppedOn = true;
+
+			if (HasBomb)
+				Status = AreaStatus.Boom;
+			else
+				Status = AreaStatus.SteppedOn;
+		}
+
+		public void TagArea()
+		{
+			if (IsSteppedOn)
+				return;
+
+			Status = AreaStatus.Flag;
+		}
 	}
 }

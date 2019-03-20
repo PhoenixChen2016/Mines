@@ -1,9 +1,10 @@
-﻿<Window x:Class="Mines.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mines"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="Mines.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="621.486" Width="800">
 	<Window.Resources>
@@ -28,7 +29,17 @@
 								</ItemsPanelTemplate>
 								<DataTemplate x:Key="ZoneTemplate">
 									<Grid d:DesignWidth="404" d:DesignHeight="351.2">
-										<Image HorizontalAlignment="Left" Height="{Binding Height, ElementName=rectangle}" VerticalAlignment="Top" Width="{Binding Width, ElementName=rectangle}" Source="{Binding ., Converter={StaticResource AreaStatusConverter}}"/>
+										<Rectangle HorizontalAlignment="Left" Height="30" Stroke="Black" VerticalAlignment="Top" Width="{Binding Width, ElementName=rectangle}" Fill="White">
+											<i:Interaction.Triggers>
+												<i:EventTrigger EventName="MouseLeftButtonDown">
+													<ei:CallMethodAction TargetObject="{Binding .}" MethodName="ClickArea"/>
+												</i:EventTrigger>
+												<i:EventTrigger EventName="MouseRightButtonDown">
+													<ei:CallMethodAction TargetObject="{Binding .}" MethodName="TagArea"/>
+												</i:EventTrigger>
+											</i:Interaction.Triggers>
+										</Rectangle>
+										<Image HorizontalAlignment="Left" Height="{Binding Height, ElementName=rectangle}" VerticalAlignment="Top" Width="{Binding Width, ElementName=rectangle}" Source="{Binding Status, Converter={StaticResource AreaStatusConverter}}"/>
 										<Rectangle x:Name="rectangle" HorizontalAlignment="Left" Height="30" Stroke="Black" VerticalAlignment="Top" Width="30"/>
 									</Grid>
 								</DataTemplate>
