@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:Mines"
         mc:Ignorable="d"
         Title="MainWindow" Height="621.486" Width="800">
+	<Window.Resources>
+		<local:AreaStatusConverter x:Key="AreaStatusConverter"/>
+	</Window.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="100"/>
@@ -25,7 +28,8 @@
 								</ItemsPanelTemplate>
 								<DataTemplate x:Key="ZoneTemplate">
 									<Grid d:DesignWidth="404" d:DesignHeight="351.2">
-										<Rectangle Fill="Red" HorizontalAlignment="Left" Height="25" Stroke="Black" VerticalAlignment="Top" Width="25"/>
+										<Image HorizontalAlignment="Left" Height="{Binding Height, ElementName=rectangle}" VerticalAlignment="Top" Width="{Binding Width, ElementName=rectangle}" Source="{Binding ., Converter={StaticResource AreaStatusConverter}}"/>
+										<Rectangle x:Name="rectangle" HorizontalAlignment="Left" Height="30" Stroke="Black" VerticalAlignment="Top" Width="30"/>
 									</Grid>
 								</DataTemplate>
 							</ItemsControl.Resources>
