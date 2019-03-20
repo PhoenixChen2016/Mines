@@ -24,7 +24,7 @@ namespace Mines
 		{
 			InitializeComponent();
 
-			DataContext = Enumerable.Range(0, 10).Select(n => Enumerable.Range(0, 10).Select(m => m * n));
+			DataContext = new MinesMap();
 		}
 	}
 }

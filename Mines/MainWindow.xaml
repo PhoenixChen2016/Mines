@@ -11,7 +11,7 @@
 			<RowDefinition Height="100"/>
 			<RowDefinition/>
 		</Grid.RowDefinitions>
-		<ItemsControl Grid.Row="1" ItemsPanel="{DynamicResource VerticalPanelTemplate}" ItemTemplate="{DynamicResource VerticalItemTemplate}" ItemsSource="{Binding .}">
+		<ItemsControl Grid.Row="1" ItemsPanel="{DynamicResource VerticalPanelTemplate}" ItemTemplate="{DynamicResource VerticalItemTemplate}" ItemsSource="{Binding Areas}">
 			<ItemsControl.Resources>
 				<ItemsPanelTemplate x:Key="VerticalPanelTemplate">
 					<StackPanel d:DesignWidth="678.8" d:DesignHeight="624.4"/>
@@ -25,7 +25,7 @@
 								</ItemsPanelTemplate>
 								<DataTemplate x:Key="ZoneTemplate">
 									<Grid d:DesignWidth="404" d:DesignHeight="351.2">
-										<Rectangle Fill="Red" HorizontalAlignment="Left" Height="50" Stroke="Black" VerticalAlignment="Top" Width="50"/>
+										<Rectangle Fill="Red" HorizontalAlignment="Left" Height="25" Stroke="Black" VerticalAlignment="Top" Width="25"/>
 									</Grid>
 								</DataTemplate>
 							</ItemsControl.Resources>
