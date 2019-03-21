@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace Mines
 {
@@ -11,6 +12,7 @@ namespace Mines
 		private bool m_IsSteppedOn = false;
 
 		public event PropertyChangedEventHandler PropertyChanged;
+		public event EventHandler<AreaClickedArgs> AreaClicked;
 
 		public bool HasBomb
 		{
@@ -73,6 +75,20 @@ namespace Mines
 				Status = AreaStatus.Boom;
 			else
 				Status = AreaStatus.SteppedOn;
+
+			AreaClicked?.Invoke(
+				this,
+				new AreaClickedArgs
+				{
+					X = X,
+					Y = Y
+				});
+		}
+
+		public void SetSteppedOn()
+		{
+			Status = AreaStatus.SteppedOn;
+			IsSteppedOn = true;
 		}
 
 		public void TagArea()

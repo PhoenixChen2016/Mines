@@ -73,6 +73,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Area.cs" />
+    <Compile Include="AreaClickedArgs.cs" />
     <Compile Include="AreaStatus.cs" />
     <Compile Include="AreaStatusConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
