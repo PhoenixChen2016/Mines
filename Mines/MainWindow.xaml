@@ -4,10 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mines"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="Mines.MainWindow"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" xmlns:ValueConverters="clr-namespace:ValueConverters;assembly=ValueConverters" x:Class="Mines.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="621.486" Width="800">
 	<Window.Resources>
+		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+		<ValueConverters:BoolToVisibilityConverter x:Key="SteppedOnConverters" TrueValue="Hidden" FalseValue="Visible"/>
 		<local:AreaStatusConverter x:Key="AreaStatusConverter"/>
 	</Window.Resources>
 	<Grid>
@@ -29,7 +31,7 @@
 								</ItemsPanelTemplate>
 								<DataTemplate x:Key="ZoneTemplate">
 									<Grid d:DesignWidth="404" d:DesignHeight="351.2">
-										<Rectangle HorizontalAlignment="Left" Height="30" Stroke="Black" VerticalAlignment="Top" Width="{Binding Width, ElementName=rectangle}" Fill="White">
+										<Grid HorizontalAlignment="Left" VerticalAlignment="Top" Background="White" Width="30" Height="30">
 											<i:Interaction.Triggers>
 												<i:EventTrigger EventName="MouseLeftButtonDown">
 													<ei:CallMethodAction TargetObject="{Binding .}" MethodName="ClickArea"/>
@@ -38,9 +40,21 @@
 													<ei:CallMethodAction TargetObject="{Binding .}" MethodName="TagArea"/>
 												</i:EventTrigger>
 											</i:Interaction.Triggers>
-										</Rectangle>
-										<Image HorizontalAlignment="Left" Height="{Binding Height, ElementName=rectangle}" VerticalAlignment="Top" Width="{Binding Width, ElementName=rectangle}" Source="{Binding Status, Converter={StaticResource AreaStatusConverter}}"/>
-										<Rectangle x:Name="rectangle" HorizontalAlignment="Left" Height="30" Stroke="Black" VerticalAlignment="Top" Width="30"/>
+											<Rectangle HorizontalAlignment="Stretch" Stroke="Black" VerticalAlignment="Stretch" Fill="White">
+												<i:Interaction.Triggers>
+													<i:EventTrigger EventName="MouseLeftButtonDown">
+														<ei:CallMethodAction TargetObject="{Binding .}" MethodName="ClickArea"/>
+													</i:EventTrigger>
+													<i:EventTrigger EventName="MouseRightButtonDown">
+														<ei:CallMethodAction TargetObject="{Binding .}" MethodName="TagArea"/>
+													</i:EventTrigger>
+												</i:Interaction.Triggers>
+											</Rectangle>
+											<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding Status, Converter={StaticResource AreaStatusConverter}}"/>
+											<Label Content="{Binding NearBombCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowBombCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+											<Rectangle x:Name="rectangle" HorizontalAlignment="Stretch" Height="Auto" Stroke="Black" VerticalAlignment="Stretch" Width="Auto"/>
+											<Rectangle HorizontalAlignment="Stretch" Stroke="Black" VerticalAlignment="Stretch" Fill="Gray" IsHitTestVisible="False" Visibility="{Binding IsSteppedOn, Converter={StaticResource SteppedOnConverters}, Mode=OneWay}"/>
+										</Grid>
 									</Grid>
 								</DataTemplate>
 							</ItemsControl.Resources>

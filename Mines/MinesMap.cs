@@ -7,11 +7,12 @@ namespace Mines
 {
 	public class MinesMap : INotifyPropertyChanged
 	{
-		private IEnumerable<IEnumerable<Area>> m_Areas;
+		private Area[][] m_Areas;
+		private readonly int m_AreaSize = 15;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public IEnumerable<IEnumerable<Area>> Areas
+		public Area[][] Areas
 		{
 			get
 			{
@@ -26,14 +27,15 @@ namespace Mines
 
 		public MinesMap()
 		{
-			GenerateMap(10);
-			RandomPutBomb(10);
+			GenerateMap();
+			RandomPutBomb(30);
+			ScanNearBombs();
 		}
 
-		private void GenerateMap(int size)
+		private void GenerateMap()
 		{
-			Areas = Enumerable.Range(0, size)
-				.Select(y => Enumerable.Range(0, size)
+			Areas = Enumerable.Range(0, m_AreaSize)
+				.Select(y => Enumerable.Range(0, m_AreaSize)
 					.Select(x => new Area
 					{
 						X = x,
@@ -56,6 +58,43 @@ namespace Mines
 
 			foreach (var area in randomTopAreaByCount)
 				area.HasBomb = true;
+		}
+
+		private void ScanNearBombs()
+		{
+			foreach (var area in from row in m_Areas
+								 from a in row
+								 select a)
+			{
+				var topY = area.Y - 1;
+				if (topY < 0)
+					topY = 0;
+
+				var leftX = area.X - 1;
+				if (leftX < 0)
+					leftX = 0;
+
+				var bottomY = area.Y + 1;
+				if (bottomY > m_AreaSize - 1)
+					bottomY = m_AreaSize - 1;
+
+				var rightX = area.X + 1;
+				if (rightX > m_AreaSize - 1)
+					rightX = m_AreaSize - 1;
+
+				int bombCount = 0;
+				for (var scanX = leftX; scanX <= rightX; scanX++)
+					for (var scanY = topY; scanY <= bottomY; scanY++)
+					{
+						if (scanX == area.X && scanY == area.Y)
+							continue;
+
+						if (m_Areas[scanY][scanX].HasBomb)
+							bombCount++;
+					}
+
+				area.NearBombCount = bombCount;
+			}
 		}
 	}
 }

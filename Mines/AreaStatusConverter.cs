@@ -18,8 +18,6 @@ namespace Mines
 						return "Assets/Boom.jpg";
 					case AreaStatus.Flag:
 						return "Assets/Flag.png";
-					case AreaStatus.SteppedOn:
-						return "Assets/SteppedOn.jpg";
 				}
 			}
 

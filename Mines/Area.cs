@@ -42,6 +42,16 @@ namespace Mines
 
 		public int Y { get; set; }
 
+		public int NearBombCount { get; set; }
+
+		public bool ShowBombCount
+		{
+			get
+			{
+				return !HasBomb && NearBombCount > 0;
+			}
+		}
+
 		public bool IsSteppedOn
 		{
 			get => m_IsSteppedOn;
