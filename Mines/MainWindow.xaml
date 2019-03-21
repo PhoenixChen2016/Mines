@@ -40,21 +40,11 @@
 													<ei:CallMethodAction TargetObject="{Binding .}" MethodName="TagArea"/>
 												</i:EventTrigger>
 											</i:Interaction.Triggers>
-											<Rectangle HorizontalAlignment="Stretch" Stroke="Black" VerticalAlignment="Stretch" Fill="White">
-												<i:Interaction.Triggers>
-													<i:EventTrigger EventName="MouseLeftButtonDown">
-														<ei:CallMethodAction TargetObject="{Binding .}" MethodName="ClickArea"/>
-													</i:EventTrigger>
-													<i:EventTrigger EventName="MouseRightButtonDown">
-														<ei:CallMethodAction TargetObject="{Binding .}" MethodName="TagArea"/>
-													</i:EventTrigger>
-												</i:Interaction.Triggers>
-											</Rectangle>
 											<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding Status, Converter={StaticResource AreaStatusConverter}}"/>
 											<Label Content="{Binding NearBombCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowBombCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-											<Rectangle x:Name="rectangle" HorizontalAlignment="Stretch" Height="Auto" Stroke="Black" VerticalAlignment="Stretch" Width="Auto"/>
 											<Rectangle HorizontalAlignment="Stretch" Stroke="Black" VerticalAlignment="Stretch" Fill="Gray" IsHitTestVisible="False" Visibility="{Binding IsSteppedOn, Converter={StaticResource SteppedOnConverters}, Mode=OneWay}"/>
 											<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="Flag.png" Visibility="{Binding IsTagged, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+											<Rectangle x:Name="rectangle" HorizontalAlignment="Stretch" Height="Auto" Stroke="Black" VerticalAlignment="Stretch" Width="Auto"/>
 										</Grid>
 									</Grid>
 								</DataTemplate>
