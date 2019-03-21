@@ -113,9 +113,17 @@ namespace Mines
 
 		private void OnAreaClicked(object sender, AreaClickedArgs args)
 		{
+			var targetArea = Areas[args.Y][args.X];
+
+			if (targetArea.Status == AreaStatus.Boom)
+			{
+				FireAllBombs();
+				return;
+			}
+
 			var waitProcessingQueue = new Queue<Area>();
-			waitProcessingQueue.Enqueue(Areas[args.Y][args.X]);
-			//var n = 1000;
+			waitProcessingQueue.Enqueue(targetArea);
+
 			while (waitProcessingQueue.Count > 0)
 			{
 				var processingArea = waitProcessingQueue.Dequeue();
@@ -152,7 +160,7 @@ namespace Mines
 
 					var targetArea = m_Areas[scanY][scanX];
 
-					if (targetArea.Status == AreaStatus.SteppedOn)
+					if (targetArea.Status == AreaStatus.SteppedOn || targetArea.Status == AreaStatus.Flag)
 						continue;
 
 					if (targetArea.HasBomb)
@@ -167,6 +175,25 @@ namespace Mines
 					targetArea.SetSteppedOn();
 					waitProcessingQueue.Enqueue(targetArea);
 				}
+		}
+
+		private void FireAllBombs()
+		{
+			foreach (var area in Areas.SelectMany(array => array))
+			{
+				if (area.HasBomb && !area.IsTagged)
+				{
+					area.Status = AreaStatus.Boom;
+					area.IsSteppedOn = true;
+				}
+
+				if (area.IsTagged && !area.HasBomb)
+				{
+					area.IsTagged = false;
+					area.IsSteppedOn = true;
+					area.Status = AreaStatus.SteppedOn;
+				}
+			}
 		}
 	}
 }

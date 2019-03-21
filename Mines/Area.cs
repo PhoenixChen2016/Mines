@@ -6,13 +6,12 @@ namespace Mines
 	public class Area : INotifyPropertyChanged
 	{
 		private bool m_HasBomb = false;
-
+		private bool m_IsSteppedOn = false;
+		private bool m_IsTagged = false;
 		private AreaStatus m_Status = AreaStatus.None;
 
-		private bool m_IsSteppedOn = false;
-
-		public event PropertyChangedEventHandler PropertyChanged;
 		public event EventHandler<AreaClickedArgs> AreaClicked;
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public bool HasBomb
 		{
@@ -24,6 +23,38 @@ namespace Mines
 			{
 				m_HasBomb = value;
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasBomb)));
+			}
+		}
+
+		public bool IsSteppedOn
+		{
+			get => m_IsSteppedOn;
+			set
+			{
+				m_IsSteppedOn = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSteppedOn)));
+			}
+		}
+		public bool IsTagged
+		{
+			get => m_IsTagged;
+			set
+			{
+				m_IsTagged = value;
+				if (m_IsTagged)
+					Status = AreaStatus.Flag;
+
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsTagged)));
+			}
+		}
+
+		public int NearBombCount { get; set; }
+
+		public bool ShowBombCount
+		{
+			get
+			{
+				return !HasBomb && NearBombCount > 0;
 			}
 		}
 
@@ -43,26 +74,6 @@ namespace Mines
 		public int X { get; set; }
 
 		public int Y { get; set; }
-
-		public int NearBombCount { get; set; }
-
-		public bool ShowBombCount
-		{
-			get
-			{
-				return !HasBomb && NearBombCount > 0;
-			}
-		}
-
-		public bool IsSteppedOn
-		{
-			get => m_IsSteppedOn;
-			set
-			{
-				m_IsSteppedOn = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSteppedOn)));
-			}
-		}
 
 		public void ClickArea()
 		{
@@ -96,7 +107,7 @@ namespace Mines
 			if (IsSteppedOn)
 				return;
 
-			Status = AreaStatus.Flag;
+			IsTagged = !IsTagged;
 		}
 	}
 }
