@@ -117,8 +117,5 @@
     <Resource Include="Assets\Boom.jpg" />
     <Resource Include="Assets\Flag.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Flag.png" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
