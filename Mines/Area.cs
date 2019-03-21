@@ -77,7 +77,7 @@ namespace Mines
 
 		public void ClickArea()
 		{
-			if (IsSteppedOn)
+			if (IsSteppedOn || IsTagged)
 				return;
 
 			IsSteppedOn = true;
