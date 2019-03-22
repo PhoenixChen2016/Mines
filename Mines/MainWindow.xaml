@@ -13,11 +13,19 @@
 		<local:AreaStatusConverter x:Key="AreaStatusConverter"/>
 	</Window.Resources>
 	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="5"/>
+			<ColumnDefinition Width="244*"/>
+			<ColumnDefinition Width="200*"/>
+			<ColumnDefinition Width="339*"/>
+			<ColumnDefinition Width="5"/>
+		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="100"/>
-			<RowDefinition/>
+			<RowDefinition Height="5*"/>
+			<RowDefinition Height="92.9"/>
+			<RowDefinition Height="492*"/>
 		</Grid.RowDefinitions>
-		<ItemsControl Grid.Row="1" ItemsPanel="{DynamicResource VerticalPanelTemplate}" ItemTemplate="{DynamicResource VerticalItemTemplate}" ItemsSource="{Binding Areas}">
+		<ItemsControl Grid.Row="2" ItemsPanel="{DynamicResource VerticalPanelTemplate}" ItemTemplate="{DynamicResource VerticalItemTemplate}" ItemsSource="{Binding Areas}" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.Column="1" Grid.ColumnSpan="3">
 			<ItemsControl.Resources>
 				<ItemsPanelTemplate x:Key="VerticalPanelTemplate">
 					<StackPanel d:DesignWidth="678.8" d:DesignHeight="624.4"/>
@@ -41,9 +49,9 @@
 												</i:EventTrigger>
 											</i:Interaction.Triggers>
 											<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding Status, Converter={StaticResource AreaStatusConverter}}"/>
-											<Label Content="{Binding NearBombCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowBombCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+											<Label Content="{Binding NearBombCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowBombCount, Converter={StaticResource BooleanToVisibilityConverter}}" ContentStringFormat=""/>
 											<Rectangle HorizontalAlignment="Stretch" Stroke="Black" VerticalAlignment="Stretch" Fill="Gray" IsHitTestVisible="False" Visibility="{Binding IsSteppedOn, Converter={StaticResource SteppedOnConverters}, Mode=OneWay}"/>
-											<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="Flag.png" Visibility="{Binding IsTagged, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+											<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="Assets/Flag.png" Visibility="{Binding IsTagged, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 											<Rectangle x:Name="rectangle" HorizontalAlignment="Stretch" Height="Auto" Stroke="Black" VerticalAlignment="Stretch" Width="Auto"/>
 										</Grid>
 									</Grid>
@@ -54,6 +62,11 @@
 				</DataTemplate>
 			</ItemsControl.Resources>
 		</ItemsControl>
+		<Grid Grid.Column="1" Grid.Row="1">
+			<Label Content="{Binding GameTime, Mode=OneWay, StringFormat=\{0:hh\\\\:mm\\\\:ss\\\\.ff\}, ValidatesOnNotifyDataErrors=False}" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="21.333"/>
+		</Grid>
+		<Button Content="重來" Grid.Column="2" Grid.Row="1" Width="120" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<ComboBox Grid.Column="3" Margin="117.06,34.38,102.2,37.28" Grid.Row="1" d:LayoutOverrides="Height"/>
 
 	</Grid>
 </Window>

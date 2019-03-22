@@ -10,7 +10,8 @@ namespace Mines
 		private bool m_IsTagged = false;
 		private AreaStatus m_Status = AreaStatus.None;
 
-		public event EventHandler<AreaClickedArgs> AreaClicked;
+		public event EventHandler<AreaArgs> AreaClicked;
+		public event EventHandler<AreaArgs> AreaTagged;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public bool HasBomb
@@ -77,19 +78,9 @@ namespace Mines
 
 		public void ClickArea()
 		{
-			if (IsSteppedOn || IsTagged)
-				return;
-
-			IsSteppedOn = true;
-
-			if (HasBomb)
-				Status = AreaStatus.Boom;
-			else
-				Status = AreaStatus.SteppedOn;
-
 			AreaClicked?.Invoke(
 				this,
-				new AreaClickedArgs
+				new AreaArgs
 				{
 					X = X,
 					Y = Y
@@ -104,10 +95,13 @@ namespace Mines
 
 		public void TagArea()
 		{
-			if (IsSteppedOn)
-				return;
-
-			IsTagged = !IsTagged;
+			AreaTagged?.Invoke(
+				this,
+				new AreaArgs
+				{
+					X = X,
+					Y = Y
+				});
 		}
 	}
 }

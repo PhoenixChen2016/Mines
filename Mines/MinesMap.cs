@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace Mines
 {
@@ -9,6 +10,9 @@ namespace Mines
 	{
 		private readonly int m_AreaSize = 10;
 		private Area[][] m_Areas;
+		private TimeSpan m_GameTime;
+		private bool m_IsGameStarting;
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public Area[][] Areas
@@ -24,11 +28,33 @@ namespace Mines
 			}
 		}
 
+		public TimeSpan GameTime
+		{
+			get => m_GameTime;
+			set
+			{
+				m_GameTime = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GameTime)));
+			}
+		}
+
 		public MinesMap()
 		{
 			GenerateMap();
 			RandomPutBomb(10);
 			ScanNearBombs();
+		}
+
+		public void ResetGame()
+		{
+			foreach (var area in Areas.SelectMany(a => a))
+			{
+				area.AreaClicked -= OnAreaClicked;
+				area.AreaTagged -= OnAreaTagged;
+			}
+
+			GenerateMap();
+			RandomPutBomb(10);
 		}
 
 		private Area CreateArea(int x, int y)
@@ -40,6 +66,7 @@ namespace Mines
 			};
 
 			area.AreaClicked += OnAreaClicked;
+			area.AreaTagged += OnAreaTagged;
 
 			return area;
 		}
@@ -123,15 +150,29 @@ namespace Mines
 				.ToArray();
 		}
 
-		private void OnAreaClicked(object sender, AreaClickedArgs args)
+		private void OnAreaClicked(object sender, AreaArgs args)
 		{
+			if (!m_IsGameStarting)
+			{
+				StartTimer();
+				m_IsGameStarting = true;
+			}
+
 			var targetArea = Areas[args.Y][args.X];
 
-			if (targetArea.Status == AreaStatus.Boom)
+			if (targetArea.IsSteppedOn || targetArea.IsTagged)
+				return;
+
+			targetArea.IsSteppedOn = true;
+
+			if (targetArea.HasBomb)
 			{
+				targetArea.Status = AreaStatus.Boom;
 				FireAllBombs();
 				return;
 			}
+			else
+				targetArea.Status = AreaStatus.SteppedOn;
 
 			var waitProcessingQueue = new Queue<Area>();
 			waitProcessingQueue.Enqueue(targetArea);
@@ -141,6 +182,16 @@ namespace Mines
 				var processingArea = waitProcessingQueue.Dequeue();
 				FindSafeAreas(processingArea, waitProcessingQueue);
 			}
+		}
+
+		private void OnAreaTagged(object sender, AreaArgs args)
+		{
+			var targetArea = Areas[args.Y][args.X];
+
+			if (targetArea.IsSteppedOn)
+				return;
+
+			targetArea.IsTagged = !targetArea.IsTagged;
 		}
 
 		private void RandomPutBomb(int count)
@@ -191,6 +242,18 @@ namespace Mines
 
 				area.NearBombCount = bombCount;
 			}
+		}
+
+		private void StartTimer()
+		{
+			var startTime = DateTime.Now;
+			Observable.Interval(TimeSpan.FromMilliseconds(100))
+				.Subscribe(n =>
+				{
+					var currentTime = DateTime.Now;
+
+					GameTime = currentTime - startTime;
+				});
 		}
 	}
 }

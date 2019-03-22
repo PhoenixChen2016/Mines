@@ -2,7 +2,7 @@
 
 namespace Mines
 {
-	public class AreaClickedArgs : EventArgs
+	public class AreaArgs : EventArgs
 	{
 		public int X { get; set; }
 
