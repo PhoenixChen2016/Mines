@@ -9,9 +9,12 @@ namespace Mines
 	public class MinesMap : INotifyPropertyChanged
 	{
 		private readonly int m_AreaSize = 10;
+		private readonly int m_BombCount = 10;
 		private Area[][] m_Areas;
 		private TimeSpan m_GameTime;
 		private bool m_IsGameStarting;
+		private bool m_IsGameOver;
+		private IDisposable m_TimerProcess;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -41,7 +44,7 @@ namespace Mines
 		public MinesMap()
 		{
 			GenerateMap();
-			RandomPutBomb(10);
+			RandomPutBomb();
 			ScanNearBombs();
 		}
 
@@ -54,7 +57,12 @@ namespace Mines
 			}
 
 			GenerateMap();
-			RandomPutBomb(10);
+			RandomPutBomb();
+			ScanNearBombs();
+
+			ResetTimer();
+			m_IsGameOver = false;
+			m_IsGameStarting = false;
 		}
 
 		private Area CreateArea(int x, int y)
@@ -122,13 +130,13 @@ namespace Mines
 				}
 		}
 
-		private void FireAllBombs()
+		private void FindAllBombs()
 		{
 			foreach (var area in Areas.SelectMany(array => array))
 			{
-				if (area.HasBomb && !area.IsTagged)
+				if (area.HasBomb && !area.IsTagged && area.Status != AreaStatus.Boom)
 				{
-					area.Status = AreaStatus.Boom;
+					area.Status = AreaStatus.Bomb;
 					area.IsSteppedOn = true;
 				}
 
@@ -152,6 +160,9 @@ namespace Mines
 
 		private void OnAreaClicked(object sender, AreaArgs args)
 		{
+			if (m_IsGameOver)
+				return;
+
 			if (!m_IsGameStarting)
 			{
 				StartTimer();
@@ -168,11 +179,16 @@ namespace Mines
 			if (targetArea.HasBomb)
 			{
 				targetArea.Status = AreaStatus.Boom;
-				FireAllBombs();
+				m_IsGameOver = true;
+				FindAllBombs();
+				StopTimer();
 				return;
 			}
 			else
 				targetArea.Status = AreaStatus.SteppedOn;
+
+			if (targetArea.NearBombCount > 0)
+				return;
 
 			var waitProcessingQueue = new Queue<Area>();
 			waitProcessingQueue.Enqueue(targetArea);
@@ -186,15 +202,20 @@ namespace Mines
 
 		private void OnAreaTagged(object sender, AreaArgs args)
 		{
+			if (m_IsGameOver)
+				return;
+
 			var targetArea = Areas[args.Y][args.X];
 
 			if (targetArea.IsSteppedOn)
 				return;
 
 			targetArea.IsTagged = !targetArea.IsTagged;
+
+			CheckWinTheGame();
 		}
 
-		private void RandomPutBomb(int count)
+		private void RandomPutBomb()
 		{
 			var random = new Random();
 
@@ -203,7 +224,7 @@ namespace Mines
 										let o = random.Next(0, 1000)
 										let t = (Index: o, Area: area)
 										orderby t.Index
-										select t.Area).Take(count);
+										select t.Area).Take(m_BombCount);
 
 			foreach (var area in randomTopAreaByCount)
 				area.HasBomb = true;
@@ -247,13 +268,38 @@ namespace Mines
 		private void StartTimer()
 		{
 			var startTime = DateTime.Now;
-			Observable.Interval(TimeSpan.FromMilliseconds(100))
+			m_TimerProcess = Observable.Interval(TimeSpan.FromMilliseconds(100))
 				.Subscribe(n =>
 				{
 					var currentTime = DateTime.Now;
 
 					GameTime = currentTime - startTime;
 				});
+		}
+
+		private void ResetTimer()
+		{
+			m_TimerProcess?.Dispose();
+
+			m_TimerProcess = null;
+			GameTime = new TimeSpan();
+		}
+
+		private void StopTimer()
+		{
+			m_TimerProcess?.Dispose();
+			m_TimerProcess = null;
+		}
+
+		private void CheckWinTheGame()
+		{
+			var TaggedAreas = Areas.SelectMany(a => a).Where(area => area.IsTagged).ToArray();
+
+			if (TaggedAreas.Length == m_BombCount && !TaggedAreas.Any(area => !area.HasBomb))
+			{
+				StopTimer();
+				m_IsGameOver = true;
+			}
 		}
 	}
 }
