@@ -55,7 +55,7 @@
 													</i:EventTrigger>
 												</i:Interaction.Triggers>
 												<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding Status, Converter={StaticResource AreaStatusConverter}}"/>
-												<Label Content="{Binding NearBombCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowBombCount, Converter={StaticResource BooleanToVisibilityConverter}}" ContentStringFormat=""/>
+												<Label Content="{Binding NearBombCount}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ShowBombCount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 												<Rectangle HorizontalAlignment="Stretch" Stroke="Black" VerticalAlignment="Stretch" Fill="Gray" IsHitTestVisible="False" Visibility="{Binding IsSteppedOn, Converter={StaticResource SteppedOnConverters}, Mode=OneWay}"/>
 												<Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="Assets/Flag.png" Visibility="{Binding IsTagged, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 												<Rectangle x:Name="rectangle" HorizontalAlignment="Stretch" Height="Auto" Stroke="Black" VerticalAlignment="Stretch" Width="Auto"/>
@@ -74,7 +74,7 @@
 			</Grid>
 		</Grid>
 		<Grid Grid.Column="1" Grid.Row="1">
-			<Label Content="{Binding GameTime, Mode=OneWay, StringFormat=\{0:hh\\\\:mm\\\\:ss\\\\.ff\}, ValidatesOnNotifyDataErrors=False}" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="32" Margin="20,0,0,0" FontWeight="Bold"/>
+			<Label Content="{Binding GameTime, Mode=OneWay, ValidatesOnNotifyDataErrors=False}" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="32" Margin="20,0,0,0" FontWeight="Bold" ContentStringFormat="{}{0:hh\:mm\:ss\.f}"/>
 		</Grid>
 		<Button x:Name="button" Content="重來" Grid.Column="2" Grid.Row="1" Width="120" Height="50" HorizontalAlignment="Center" VerticalAlignment="Center">
 			<i:Interaction.Triggers>
