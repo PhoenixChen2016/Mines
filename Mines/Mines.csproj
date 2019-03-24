@@ -97,6 +97,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MinesMap.cs" />
+    <Compile Include="MinesStatus.cs" />
+    <Compile Include="MinesStatusToVisibilityConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

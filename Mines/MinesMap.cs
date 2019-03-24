@@ -11,9 +11,11 @@ namespace Mines
 		private readonly int m_AreaSize = 10;
 		private readonly int m_BombCount = 10;
 		private Area[][] m_Areas;
+		private string m_GameOverMessage;
+		private MinesStatus m_GameStatus = MinesStatus.None;
 		private TimeSpan m_GameTime;
-		private bool m_IsGameStarting;
 		private bool m_IsGameOver;
+		private bool m_IsGameStarting;
 		private IDisposable m_TimerProcess;
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -31,6 +33,26 @@ namespace Mines
 			}
 		}
 
+		public string GameOverMessage
+		{
+			get => m_GameOverMessage;
+			set
+			{
+				m_GameOverMessage = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GameOverMessage)));
+			}
+		}
+
+		public MinesStatus GameStatus
+		{
+			get => m_GameStatus;
+			set
+			{
+				m_GameStatus = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GameStatus)));
+			}
+		}
+
 		public TimeSpan GameTime
 		{
 			get => m_GameTime;
@@ -40,7 +62,6 @@ namespace Mines
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GameTime)));
 			}
 		}
-
 		public MinesMap()
 		{
 			GenerateMap();
@@ -63,6 +84,20 @@ namespace Mines
 			ResetTimer();
 			m_IsGameOver = false;
 			m_IsGameStarting = false;
+			GameStatus = MinesStatus.None;
+		}
+
+		private void CheckWinTheGame()
+		{
+			var TaggedAreas = Areas.SelectMany(a => a).Where(area => area.IsTagged).ToArray();
+
+			if (TaggedAreas.Length == m_BombCount && !TaggedAreas.Any(area => !area.HasBomb))
+			{
+				StopTimer();
+				m_IsGameOver = true;
+				GameStatus = MinesStatus.PlayerWin;
+				GameOverMessage = "完成掃雷";
+			}
 		}
 
 		private Area CreateArea(int x, int y)
@@ -82,6 +117,25 @@ namespace Mines
 		private void DestroyArea(Area area)
 		{
 			area.AreaClicked -= OnAreaClicked;
+		}
+
+		private void FindAllBombs()
+		{
+			foreach (var area in Areas.SelectMany(array => array))
+			{
+				if (area.HasBomb && !area.IsTagged && area.Status != AreaStatus.Boom)
+				{
+					area.Status = AreaStatus.Bomb;
+					area.IsSteppedOn = true;
+				}
+
+				if (area.IsTagged && !area.HasBomb)
+				{
+					area.IsTagged = false;
+					area.IsSteppedOn = true;
+					area.Status = AreaStatus.SteppedOn;
+				}
+			}
 		}
 
 		private void FindSafeAreas(Area centerArea, Queue<Area> waitProcessingQueue)
@@ -130,25 +184,6 @@ namespace Mines
 				}
 		}
 
-		private void FindAllBombs()
-		{
-			foreach (var area in Areas.SelectMany(array => array))
-			{
-				if (area.HasBomb && !area.IsTagged && area.Status != AreaStatus.Boom)
-				{
-					area.Status = AreaStatus.Bomb;
-					area.IsSteppedOn = true;
-				}
-
-				if (area.IsTagged && !area.HasBomb)
-				{
-					area.IsTagged = false;
-					area.IsSteppedOn = true;
-					area.Status = AreaStatus.SteppedOn;
-				}
-			}
-		}
-
 		private void GenerateMap()
 		{
 			Areas = Enumerable.Range(0, m_AreaSize)
@@ -180,8 +215,11 @@ namespace Mines
 			{
 				targetArea.Status = AreaStatus.Boom;
 				m_IsGameOver = true;
+				GameStatus = MinesStatus.PlayerLose;
+				GameOverMessage = "失敗了";
 				FindAllBombs();
 				StopTimer();
+
 				return;
 			}
 			else
@@ -228,6 +266,14 @@ namespace Mines
 
 			foreach (var area in randomTopAreaByCount)
 				area.HasBomb = true;
+		}
+
+		private void ResetTimer()
+		{
+			m_TimerProcess?.Dispose();
+
+			m_TimerProcess = null;
+			GameTime = new TimeSpan();
 		}
 
 		private void ScanNearBombs()
@@ -277,29 +323,10 @@ namespace Mines
 				});
 		}
 
-		private void ResetTimer()
-		{
-			m_TimerProcess?.Dispose();
-
-			m_TimerProcess = null;
-			GameTime = new TimeSpan();
-		}
-
 		private void StopTimer()
 		{
 			m_TimerProcess?.Dispose();
 			m_TimerProcess = null;
-		}
-
-		private void CheckWinTheGame()
-		{
-			var TaggedAreas = Areas.SelectMany(a => a).Where(area => area.IsTagged).ToArray();
-
-			if (TaggedAreas.Length == m_BombCount && !TaggedAreas.Any(area => !area.HasBomb))
-			{
-				StopTimer();
-				m_IsGameOver = true;
-			}
 		}
 	}
 }
