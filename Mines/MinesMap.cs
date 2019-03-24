@@ -8,8 +8,7 @@ namespace Mines
 {
 	public class MinesMap : INotifyPropertyChanged
 	{
-		private readonly int m_AreaSize = 10;
-		private readonly int m_BombCount = 10;
+		private MinesLevel m_SelectedLevel;
 		private Area[][] m_Areas;
 		private string m_GameOverMessage;
 		private MinesStatus m_GameStatus = MinesStatus.None;
@@ -62,21 +61,59 @@ namespace Mines
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GameTime)));
 			}
 		}
-		public MinesMap()
+
+		public MinesLevel[] Scenes => new[] {
+			new MinesLevel
+			{
+				AreaSize = 10,
+				BombCount = 10,
+				LevelName = "Level 1"
+			},
+			new MinesLevel
+			{
+				AreaSize = 15,
+				BombCount = 30,
+				LevelName = "Level 2"
+			},
+			new MinesLevel
+			{
+				AreaSize = 20,
+				BombCount = 50,
+				LevelName = "Level 3"
+			},
+			new MinesLevel
+			{
+				AreaSize = 22,
+				BombCount = 100,
+				LevelName = "Level 4"
+			},
+			new MinesLevel
+			{
+				AreaSize = 22,
+				BombCount = 150,
+				LevelName = "Level 5"
+			}
+		};
+
+		public MinesLevel SelectedLevel
 		{
-			GenerateMap();
-			RandomPutBomb();
-			ScanNearBombs();
+			get => m_SelectedLevel;
+			set
+			{
+				m_SelectedLevel = value;
+				CreateNewSence();
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedLevel)));
+			}
 		}
 
-		public void ResetGame()
+		public MinesMap()
 		{
-			foreach (var area in Areas.SelectMany(a => a))
-			{
-				area.AreaClicked -= OnAreaClicked;
-				area.AreaTagged -= OnAreaTagged;
-			}
+			m_SelectedLevel = Scenes.First();
+			CreateNewSence();
+		}
 
+		private void CreateNewSence()
+		{
 			GenerateMap();
 			RandomPutBomb();
 			ScanNearBombs();
@@ -87,11 +124,22 @@ namespace Mines
 			GameStatus = MinesStatus.None;
 		}
 
+		public void ResetGame()
+		{
+			foreach (var area in Areas.SelectMany(a => a))
+			{
+				area.AreaClicked -= OnAreaClicked;
+				area.AreaTagged -= OnAreaTagged;
+			}
+
+			CreateNewSence();
+		}
+
 		private void CheckWinTheGame()
 		{
 			var TaggedAreas = Areas.SelectMany(a => a).Where(area => area.IsTagged).ToArray();
 
-			if (TaggedAreas.Length == m_BombCount && !TaggedAreas.Any(area => !area.HasBomb))
+			if (TaggedAreas.Length == SelectedLevel.BombCount && !TaggedAreas.Any(area => !area.HasBomb))
 			{
 				StopTimer();
 				m_IsGameOver = true;
@@ -152,12 +200,12 @@ namespace Mines
 				leftX = 0;
 
 			var bottomY = centerArea.Y + 1;
-			if (bottomY > m_AreaSize - 1)
-				bottomY = m_AreaSize - 1;
+			if (bottomY > SelectedLevel.AreaSize - 1)
+				bottomY = SelectedLevel.AreaSize - 1;
 
 			var rightX = centerArea.X + 1;
-			if (rightX > m_AreaSize - 1)
-				rightX = m_AreaSize - 1;
+			if (rightX > SelectedLevel.AreaSize - 1)
+				rightX = SelectedLevel.AreaSize - 1;
 
 			for (var scanX = leftX; scanX <= rightX; scanX++)
 				for (var scanY = topY; scanY <= bottomY; scanY++)
@@ -186,8 +234,8 @@ namespace Mines
 
 		private void GenerateMap()
 		{
-			Areas = Enumerable.Range(0, m_AreaSize)
-				.Select(y => Enumerable.Range(0, m_AreaSize)
+			Areas = Enumerable.Range(0, SelectedLevel.AreaSize)
+				.Select(y => Enumerable.Range(0, SelectedLevel.AreaSize)
 					.Select(x => CreateArea(x, y))
 					.ToArray())
 				.ToArray();
@@ -262,7 +310,7 @@ namespace Mines
 										let o = random.Next(0, 1000)
 										let t = (Index: o, Area: area)
 										orderby t.Index
-										select t.Area).Take(m_BombCount);
+										select t.Area).Take(SelectedLevel.BombCount);
 
 			foreach (var area in randomTopAreaByCount)
 				area.HasBomb = true;
@@ -289,12 +337,12 @@ namespace Mines
 					leftX = 0;
 
 				var bottomY = area.Y + 1;
-				if (bottomY > m_AreaSize - 1)
-					bottomY = m_AreaSize - 1;
+				if (bottomY > SelectedLevel.AreaSize - 1)
+					bottomY = SelectedLevel.AreaSize - 1;
 
 				var rightX = area.X + 1;
-				if (rightX > m_AreaSize - 1)
-					rightX = m_AreaSize - 1;
+				if (rightX > SelectedLevel.AreaSize - 1)
+					rightX = SelectedLevel.AreaSize - 1;
 
 				int bombCount = 0;
 				for (var scanX = leftX; scanX <= rightX; scanX++)

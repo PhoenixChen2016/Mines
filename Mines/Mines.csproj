@@ -96,6 +96,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MinesLevel.cs" />
     <Compile Include="MinesMap.cs" />
     <Compile Include="MinesStatus.cs" />
     <Compile Include="MinesStatusToVisibilityConverter.cs" />
