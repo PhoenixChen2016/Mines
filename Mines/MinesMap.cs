@@ -90,7 +90,7 @@ namespace Mines
 			new MinesLevel
 			{
 				AreaSize = 22,
-				BombCount = 200,
+				BombCount = 150,
 				LevelName = "Level 5"
 			}
 		};
