@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Security.Cryptography;
 
 namespace Mines
 {
@@ -303,11 +304,20 @@ namespace Mines
 
 		private void RandomPutBomb()
 		{
-			var random = new Random();
+			var random = RandomNumberGenerator.Create();
+
+			char RandomNumber()
+			{
+				var data = new byte[2];
+
+				random.GetBytes(data);
+
+				return BitConverter.ToChar(data, 0);
+			}
 
 			var randomTopAreaByCount = (from row in m_Areas
 										from area in row
-										let o = random.Next(0, 1000)
+										let o = RandomNumber()
 										let t = (Index: o, Area: area)
 										orderby t.Index
 										select t.Area).Take(SelectedLevel.BombCount);
